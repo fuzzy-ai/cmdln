@@ -12,7 +12,8 @@
     "fuzzy.io-web": "^0.2.0",
     "async": "0.9.x",
     "yargs": "3.9.x",
-    "cson": "3.0.x"
+    "cson": "3.0.x",
+    "split": "^1.0.0"
   },
   "devDependencies": {
     "coffee-script": "1.9.x",
