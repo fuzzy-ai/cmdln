@@ -10,6 +10,7 @@ main = (argv) ->
 
   key = argv.k || argv.key || process.env.FUZZY_IO_KEY
   id = argv.i || argv.id || process.env.FUZZY_IO_ID
+  ignore = argv.g || argv.ignore
 
   client = new FuzzyIOClient key
 
@@ -20,7 +21,15 @@ main = (argv) ->
   headersOut = false
 
   score = (params, callback) ->
-    client.evaluate id, params, (err, results) ->
+    if ignore
+      toEval = _.omit(params, ignore)
+    else
+      toEval = params
+    clean = {}
+    for name, value of toEval
+      if value?
+        clean[name] = value
+    client.evaluate id, clean, (err, results) ->
       if err
         callback err
       else
@@ -40,7 +49,15 @@ main = (argv) ->
     if !headers?
       headers = row
     else
-      params = _.zipObject headers, _.map(row, (s) -> parseFloat(s))
+      params = {}
+      for header, i in headers
+        s = row[i]
+        if ignore? && header == ignore
+          params[header] = s
+        else if s? && s.length > 0
+          params[header] = parseFloat(s)
+        else
+          params[header] = null
       q.push params, (err, row) ->
         if err
           console.error err
