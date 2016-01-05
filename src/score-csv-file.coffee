@@ -9,7 +9,7 @@ _ = require 'lodash'
 main = (argv) ->
 
   key = argv.k || argv.key || process.env.FUZZY_IO_KEY
-  id = argv.i || argv.id || process.env.FUZZY_IO_KEY
+  id = argv.i || argv.id || process.env.FUZZY_IO_ID
 
   client = new FuzzyIOClient key
 
