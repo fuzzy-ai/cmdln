@@ -12,6 +12,14 @@ main = (argv) ->
   id = argv.i || argv.id || process.env.FUZZY_IO_ID
   ignore = argv.g || argv.ignore
 
+  if !key?
+    process.stderr.write "No key defined."
+    process.exit(-1)
+
+  if !id?
+    process.stderr.write "No agent ID defined."
+    process.exit(-1)
+
   client = new FuzzyIOClient key
 
   filename = argv._[0]
