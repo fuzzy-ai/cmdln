@@ -7,16 +7,16 @@
     "start": "node lib/main.js"
   },
   "dependencies": {
-    "lodash": "^3.6.0",
-    "fuzzy.io": "0.3.x",
-    "fuzzy.io-web": "^0.2.0",
-    "async": "0.9.x",
-    "yargs": "3.9.x",
+    "async": "^1.5.2",
     "cson": "3.0.x",
-    "split": "^1.0.0"
+    "fuzzy.io": "^0.9.2",
+    "fuzzy.io-web": "^0.2.0",
+    "lodash": "^4.11.1",
+    "split": "^1.0.0",
+    "yargs": "^4.6.0"
   },
   "devDependencies": {
-    "coffee-script": "1.9.x",
-    "glob": "^5.0.5"
+    "coffee-script": "^1.10.0",
+    "glob": "^7.0.3"
   }
 }
