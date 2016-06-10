@@ -7,7 +7,8 @@ CSON = require 'cson'
 
 main = (argv) ->
   key = argv.k || argv.key || process.env.FUZZY_IO_KEY
-  client = new FuzzyIOClient key
+  root = argv.root || process.env.FUZZY_IO_ROOT || "https://api.fuzzy.io"
+  client = new FuzzyIOClient {key: key, root: root}
 
   newAgent = (filename, callback) ->
     async.waterfall [
