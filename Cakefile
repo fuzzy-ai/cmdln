@@ -22,7 +22,7 @@ cmd = (str, env, callback) ->
     callback?() if code is 0
 
 build = (callback) ->
-  cmd "coffee -c fuzzy-ai-cmdln.coffee", callback
+  cmd "coffee -c fuzzy.ai-cmdln.coffee", callback
 
 clean = (callback) ->
   patterns = ["*.js", "*~"]
