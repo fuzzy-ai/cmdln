@@ -1,6 +1,5 @@
 fs = require "fs"
 
-{print} = require "sys"
 {spawn} = require "child_process"
 
 glob = require "glob"
@@ -18,18 +17,15 @@ cmd = (str, env, callback) ->
   proc.stderr.on "data", (data) ->
     process.stderr.write data.toString()
   proc.stdout.on "data", (data) ->
-    print data.toString()
+    process.stdout.write data.toString()
   proc.on "exit", (code) ->
     callback?() if code is 0
 
 build = (callback) ->
-  cmd "coffee -c -o lib src", callback
-
-buildTest = (callback) ->
-  cmd "coffee -c test", callback
+  cmd "coffee -c fuzzy-ai-cmdln.coffee", callback
 
 clean = (callback) ->
-  patterns = ["lib/*.js", "test/*.js", "*~", "lib/*~", "src/*~", "test/*~"]
+  patterns = ["*.js", "*~"]
   for pattern in patterns
     glob pattern, (err, files) ->
       for file in files
@@ -39,17 +35,6 @@ clean = (callback) ->
 task "clean", "Clean up extra files", ->
   clean()
 
-task "build", "Build lib/ from src/", ->
+task "build", "Build from source", ->
   clean ->
     build()
-
-task "buildtest", "Build test", ->
-  clean ->
-    build ->
-      buildTest()
-
-task "test", "Test the API", ->
-  clean ->
-    build ->
-      buildTest ->
-        cmd "vows --spec test/*-test.js"

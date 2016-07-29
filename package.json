@@ -1,10 +1,11 @@
 {
   "name": "fuzzy.io-tools",
   "version": "0.2.1",
+  "bin": "./fuzzy-ai-cmdln.js",
   "scripts": {
+    "prepublish": "cake build",
     "build": "cake build",
-    "clean": "cake clean",
-    "start": "node lib/main.js"
+    "clean": "cake clean"
   },
   "dependencies": {
     "async": "^2.0.1",
