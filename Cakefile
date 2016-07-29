@@ -30,7 +30,7 @@ clean = (callback) ->
     glob pattern, (err, files) ->
       for file in files
         fs.unlinkSync file
-  callback()
+  callback?()
 
 task "clean", "Clean up extra files", ->
   clean()
