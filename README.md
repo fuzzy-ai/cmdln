@@ -1,2 +1,2 @@
 # tools
-Command-line client for Fuzzy.io API
+Command-line client for fuzzy.ai API

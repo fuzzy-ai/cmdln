@@ -19,7 +19,7 @@
 path = require 'path'
 fs = require 'fs'
 
-FuzzyAIClient = require 'fuzzy.io'
+FuzzyAIClient = require 'fuzzy.ai'
 yargs = require 'yargs'
 async = require 'async'
 CSON = require 'cson'
