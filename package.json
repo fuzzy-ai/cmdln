@@ -1,7 +1,9 @@
 {
-  "name": "fuzzy.io-tools",
+  "name": "fuzzy.ai-cmdln",
   "version": "0.2.1",
-  "bin": "./fuzzy-ai-cmdln.js",
+  "bin": {
+    "fuzzy.ai": "./fuzzy.ai-cmdln.js"
+  },
   "scripts": {
     "prepublish": "cake build",
     "build": "cake build",
