@@ -5,24 +5,31 @@ fs = require "fs"
 glob = require "glob"
 _ = require "lodash"
 
-cmd = (str, env, callback) ->
-  if _.isFunction(env)
-    callback = env
-    env = null
-  env = _.defaults(env, process.env)
-  parts = str.split(" ")
+cmd = (str, callback) ->
+
+  parts = str.split(' ')
   main = parts[0]
   rest = parts.slice(1)
-  proc = spawn main, rest, {env: env}
-  proc.stderr.on "data", (data) ->
-    process.stderr.write data.toString()
-  proc.stdout.on "data", (data) ->
-    process.stdout.write data.toString()
-  proc.on "exit", (code) ->
-    callback?() if code is 0
+  proc = spawn main, rest
+  out = ''
+  err = ''
+
+  proc.stderr.on 'data', (data) ->
+    err += data.toString()
+
+  proc.stdout.on 'data', (data) ->
+    out += data.toString()
+
+  proc.on 'exit', (code) ->
+    if code is 0
+      callback?(out, err)
+    else
+      process.exit(code)
 
 build = (callback) ->
-  cmd "coffee -c fuzzy.ai-cmdln.coffee", callback
+  cmd 'coffee -cp fuzzy.ai-cmdln.coffee', (output) ->
+    shebang = '#!/usr/bin/env node'
+    fs.writeFileSync './fuzzy.ai-cmdln.js', shebang + "\n" + output + "\n"
 
 clean = (callback) ->
   patterns = ["*.js", "*~"]
