@@ -24,6 +24,10 @@ yargs = require 'yargs'
 async = require 'async'
 CSON = require 'cson'
 _ = require 'lodash'
+parse = require 'csv-parse'
+transform = require 'stream-transform'
+stringify = require 'csv-stringify'
+debug = require('debug')('fuzzy.ai:cmdln')
 
 argv = yargs
   .usage('Usage: $0 <command> [options]')
@@ -56,20 +60,26 @@ argv = yargs
   .alias('h', 'help')
   .argv
 
-parseAgentFile = (agentFile) ->
+parseAgentFile = (agentFile, callback) ->
 
   ext = path.extname(agentFile).toLowerCase()
 
   switch ext
     when '.cson'
-      model = CSON.parseCSONFile agentFile
+      CSON.parseCSONFile agentFile, {}, callback
     when '.json'
-      str = fs.readFileSync(agentFile, 'utf-8')
-      model = JSON.parse(str)
+      fs.readFile agentFile, 'utf-8', (err, str) ->
+        if err
+          callback err
+        else
+          try
+            model = JSON.parse(str)
+            # We don't want exceptions bubbling back up here
+            setImmediate callback, null, model
+          catch error
+            callback null, error
     else
-      throw new Error "Unrecognized file extension for model file #{agentFile}"
-
-  model
+      callback new Error "Unrecognized extension for #{agentFile}"
 
 # FIXME: this is kind of inefficient.
 
@@ -97,29 +107,66 @@ toOutputStream = (name, callback) ->
   if name?
     try
       str = fs.createWriteStream name
-      callback null, str
+      # So exceptions don't bubble up here
+      setImmediate callback, null, str
     catch err
       callback err, null
   else
     callback null, process.stdout
 
+transformCSVFile = (filename, output, handler, callback) ->
+
+  parser = parse
+    delimiter: ','
+    columns: true
+    auto_parse: true
+    auto_parse_date: true
+
+  stringifier = stringify
+    delimiter: ','
+    header: true
+
+  input = fs.createReadStream filename
+
+  blankToNull = transform (record, callback) ->
+    for name, value of record
+      if _.isString record[name] and record[name].length is 0
+        record[name] = null
+    callback null, record
+
+  transformer = transform handler
+
+  output.on 'finish', ->
+    callback null
+
+  input
+  .pipe(parser)
+  .pipe(blankToNull)
+  .pipe(transformer)
+  .pipe(stringifier)
+  .pipe(output)
+
 handler =
   create: (client, argv, callback) ->
+    debug("Creating a new agent")
+    created = null
     async.waterfall [
       (callback) ->
+        debug "Parsing agent file #{argv.agentfile}"
         parseAgentFile argv.agentfile, callback
       (agent, callback) ->
+        debug "Got agent"
+        debug agent
         client.newAgent agent, callback
-      (created, callback) ->
+      (results, callback) ->
+        created = results
+        debug created
+        toOutputStream argv.o, callback
+      (str, callback) ->
         if argv.q
-          callback null
+          str.write created.id, "utf-8", callback
         else
-          async.waterfall [
-            (callback) ->
-              toOutputStream argv.o, callback
-            (str, callback) ->
-              str.end JSON.stringify(created), "utf-8", callback
-          ], callback
+          str.write JSON.stringify(created, null, 2), "utf-8", callback
     ], callback
   read: (client, argv, callback) ->
     agent = null
@@ -132,7 +179,7 @@ handler =
         agent = results
         toOutputStream argv.o, callback
       (str, callback) ->
-        str.end JSON.stringify(agent), "utf-8", callback
+        str.write JSON.stringify(agent, null, 2), "utf-8", callback
     ], callback
   update: (client, argv, callback) ->
     async.waterfall [
@@ -147,15 +194,15 @@ handler =
         [id, agent] = results
         client.putAgent id, agent, callback
       (updated, callback) ->
-        if argv.q
-          callback null
-        else
-          async.waterfall [
-            (callback) ->
-              toOutputStream argv.o, callback
-            (str, callback) ->
-              str.end JSON.stringify(updated), "utf-8", callback
-          ], callback
+        async.waterfall [
+          (callback) ->
+            toOutputStream argv.o, callback
+          (str, callback) ->
+            if argv.q
+              str.write updated.id, "utf-8", callback
+            else
+              str.write JSON.stringify(updated, null, 2), "utf-8", callback
+        ], callback
     ], callback
   delete: (client, argv, callback) ->
     async.waterfall [
@@ -163,6 +210,30 @@ handler =
         toID client, argv.agent, callback
       (id, callback) ->
         client.deleteAgent id, callback
+    ], callback
+  batch: (client, argv, callback) ->
+    id = null
+    inputNames = null
+    outputNames = null
+    async.waterfall [
+      (callback) ->
+        toID client, argv.agent, callback
+      (results, callback) ->
+        id = results
+        client.getAgent id, callback
+      (agent, callback) ->
+        inputNames = _.keys agent.inputs
+        outputNames = _.keys agent.outputs
+        toOutputStream argv.o, callback
+      (str, callback) ->
+        handler = (record, callback) ->
+          inputs = _.pick record, inputNames
+          client.evaluate id, inputs, (err, outputs) ->
+            if err
+              callback err
+            else
+              callback null, _.assign {}, inputs, _.pick(outputs, outputNames)
+        transformCSVFile argv.csvfile, str, handler, callback
     ], callback
 
 main = (argv, callback) ->
@@ -181,5 +252,4 @@ main argv, (err) ->
     process.stderr.write err.message + "\n"
     process.exit 1
   else
-    console.log "Done."
     process.exit 0

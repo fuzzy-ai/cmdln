@@ -1,0 +1,19 @@
+name: "Two inputs, one output"
+inputs:
+  input1:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input2:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+outputs:
+  output1:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+rules: [
+  "input1 INCREASES output1"
+  "input2 INCREASES output1"
+]
