@@ -60,6 +60,11 @@ argv = yargs
   .alias('h', 'help')
   .argv
 
+# pretty-print an object as JSON
+
+pp = (obj) ->
+  JSON.stringify(obj, null, 2) + "\n"
+
 parseAgentFile = (agentFile, callback) ->
 
   ext = path.extname(agentFile).toLowerCase()
@@ -166,7 +171,7 @@ handler =
         if argv.q
           str.write created.id, "utf-8", callback
         else
-          str.write JSON.stringify(created, null, 2), "utf-8", callback
+          str.write pp(created), "utf-8", callback
     ], callback
   read: (client, argv, callback) ->
     agent = null
@@ -179,7 +184,7 @@ handler =
         agent = results
         toOutputStream argv.o, callback
       (str, callback) ->
-        str.write JSON.stringify(agent, null, 2), "utf-8", callback
+        str.write pp(agent), "utf-8", callback
     ], callback
   update: (client, argv, callback) ->
     async.waterfall [
@@ -201,7 +206,7 @@ handler =
             if argv.q
               str.write updated.id, "utf-8", callback
             else
-              str.write JSON.stringify(updated, null, 2), "utf-8", callback
+              str.write pp(updated), "utf-8", callback
         ], callback
     ], callback
   delete: (client, argv, callback) ->
