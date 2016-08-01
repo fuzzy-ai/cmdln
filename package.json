@@ -26,5 +26,6 @@
   "devDependencies": {
     "coffee-script": "^1.10.0",
     "glob": "^7.0.3"
-  }
+  },
+  "repository": "fuzzy-ai/cmdln"
 }
