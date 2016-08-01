@@ -51,6 +51,10 @@ argv = yargs
   .describe('q', 'Minimize console output')
   .boolean('q')
   .default('q', false)
+  .alias('b', 'batch-size')
+  .describe('b', "Batch size")
+  .number('b')
+  .default('b', 128)
   .env('FUZZY_AI')
   .alias('c', 'config')
   .describe('c', 'Config file')
@@ -220,25 +224,99 @@ handler =
     id = null
     inputNames = null
     outputNames = null
+    debug "Starting batch for #{argv.agent}"
     async.waterfall [
       (callback) ->
+        debug "Getting ID for #{argv.agent}"
         toID client, argv.agent, callback
       (results, callback) ->
         id = results
+        debug "ID for #{argv.agent} is #{id}"
         client.getAgent id, callback
       (agent, callback) ->
+        debug "Getting inputNames and outputNames for #{id}"
         inputNames = _.keys agent.inputs
         outputNames = _.keys agent.outputs
+        debug inputNames
+        debug outputNames
+        debug "Getting output stream for #{argv.o}"
         toOutputStream argv.o, callback
-      (str, callback) ->
-        handler = (record, callback) ->
-          inputs = _.pick record, inputNames
+      (output, callback) ->
+        buffer = []
+
+        debug "Got stream for #{argv.o}"
+
+        parser = parse
+          delimiter: ','
+          columns: true
+          auto_parse: true
+          auto_parse_date: true
+
+        stringifier = stringify
+          delimiter: ','
+          header: true
+
+        debug "Creating input stream for #{argv.csvfile}"
+
+        input = fs.createReadStream argv.csvfile
+
+        b2n = (record, callback) ->
+          for name, value of record
+            if _.isString record[name] and record[name].length is 0
+              record[name] = null
+          callback null, record
+
+        blankToNull = transform b2n, {parallel: Infinity}
+
+        debug blankToNull
+
+        postBatch = (batch) ->
+          debug "Posting batch (#{batch.length})"
+          inputs = _.map batch, (batchItem) ->
+            _.pick batchItem[0], inputNames
           client.evaluate id, inputs, (err, outputs) ->
             if err
-              callback err
+              debug err
+              _.each batch, (batchItem) ->
+                setImmediate batchItem[1], err
             else
-              callback null, _.assign {}, inputs, _.pick(outputs, outputNames)
-        transformCSVFile argv.csvfile, str, handler, callback
+              _.each batch, (batchItem, i) ->
+                results = _.assign {}, batchItem[0], outputs[i]
+                setImmediate batchItem[1], null, results
+
+        enqueueRecord = (record, callback) ->
+          debug "Got record"
+          buffer.push [record, callback]
+          debug "Buffer length = #{buffer.length} (max #{argv.b})"
+          if buffer.length == argv.b
+            debug "Flushing buffer"
+            batch = buffer.slice()
+            buffer = []
+            postBatch batch
+
+        transformer = transform enqueueRecord, {parallel: Infinity}
+
+        debug "parallel = #{transformer.options.parallel}"
+
+        blankToNull.on 'end', ->
+          debug "Finishing input"
+          batch = buffer.slice()
+          buffer = []
+          postBatch batch
+
+        output.on 'finish', ->
+          debug "Finished"
+          callback null
+
+        debug "Setting up pipeline"
+
+        input
+        .pipe(parser)
+        .pipe(blankToNull)
+        .pipe(transformer)
+        .pipe(stringifier)
+        .pipe(output)
+
     ], callback
 
 main = (argv, callback) ->
