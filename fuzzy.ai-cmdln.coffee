@@ -269,10 +269,13 @@ handler =
         debug blankToNull
 
         postBatch = (batch) ->
-          debug "Posting batch (#{batch.length})"
           inputs = _.map batch, (batchItem) ->
             _.pick batchItem[0], inputNames
+          debug "Posting batch (#{batch.length})"
+          start = _.now()
           client.evaluate id, inputs, (err, outputs) ->
+            end = _.now()
+            debug "Evaluation of (#{batch.length}) items took #{end - start}ms"
             if err
               debug err
               _.each batch, (batchItem) ->
