@@ -1,0 +1,169 @@
+name: "Thirty-two inputs"
+inputs:
+  input1:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input2:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input3:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input4:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input5:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input6:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input7:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input8:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input9:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input10:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input11:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input12:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input13:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input14:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input15:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input16:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input17:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input18:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input19:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input20:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input21:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input22:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input23:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input24:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input25:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input26:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input27:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input28:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input29:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input30:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input31:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+  input32:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+outputs:
+  output1:
+    low: [0, 5]
+    medium: [0, 5, 10]
+    high: [5, 10]
+rules: [
+  "input1 INCREASES output1"
+  "input2 INCREASES output1"
+  "input3 INCREASES output1"
+  "input4 INCREASES output1"
+  "input5 INCREASES output1"
+  "input6 INCREASES output1"
+  "input7 INCREASES output1"
+  "input8 INCREASES output1"
+  "input9 INCREASES output1"
+  "input10 INCREASES output1"
+  "input11 INCREASES output1"
+  "input12 INCREASES output1"
+  "input13 INCREASES output1"
+  "input14 INCREASES output1"
+  "input15 INCREASES output1"
+  "input16 INCREASES output1"
+  "input17 INCREASES output1"
+  "input18 INCREASES output1"
+  "input19 INCREASES output1"
+  "input20 INCREASES output1"
+  "input21 INCREASES output1"
+  "input22 INCREASES output1"
+  "input23 INCREASES output1"
+  "input24 INCREASES output1"
+  "input25 INCREASES output1"
+  "input26 INCREASES output1"
+  "input27 INCREASES output1"
+  "input28 INCREASES output1"
+  "input29 INCREASES output1"
+  "input30 INCREASES output1"
+  "input31 INCREASES output1"
+  "input32 INCREASES output1"
+]
