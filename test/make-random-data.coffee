@@ -6,10 +6,16 @@ if process.argv.length < 3
 else
   count = parseInt(process.argv[2])
 
-console.log "id,input1,input2"
+if process.argv.length < 4
+  inputs = 2
+else
+  inputs = parseInt(process.argv[3])
+
+inputNames = _.times inputs, (i) -> "input#{i + 1}"
+
+console.log "id,#{inputNames.join(',')}"
 
 _.times count, (i) ->
   id = uuid.v4()
-  input1 = _.random(0, 10)
-  input2 = _.random(0, 10)
-  console.log "#{id},#{input1},#{input2}"
+  values = _.times inputs, -> _.random(0, 10)
+  console.log "#{id},#{values.join(',')}"
