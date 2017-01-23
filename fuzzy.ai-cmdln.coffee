@@ -223,6 +223,10 @@ handler =
     inputNames = null
     outputNames = null
     debug "Starting batch for #{argv.agent}"
+
+    if argv.b < 1 or argv.b > 4096
+      return callback new Error("Batch size must be between 1 and 4096")
+
     async.waterfall [
       (callback) ->
         debug "Getting ID for #{argv.agent}"
