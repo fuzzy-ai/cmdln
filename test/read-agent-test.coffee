@@ -24,7 +24,7 @@ debug = require('debug')('fuzzy.ai:read-agent-test')
 runScript = require './run-script'
 
 vows
-  .describe 'create agent test'
+  .describe 'read agent test'
   .addBatch
     'and we create a new agent':
       topic: ->
@@ -58,5 +58,5 @@ vows
           assert.ifError err
           assert.isObject data
           assert.deepEqual data, created
-          
+
   .export module
