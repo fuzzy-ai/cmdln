@@ -8,9 +8,9 @@
     "*.js"
   ],
   "scripts": {
-    "prepublish": "cake build",
-    "build": "cake build",
-    "clean": "cake clean"
+    "prepublish": "npm run-script build",
+    "build": "coffee -c ./fuzzy.ai-cmdln.coffee && coffee -c test/",
+    "clean": "rm ./fuzzy.ai-cmdln.js; rm test/*.js"
   },
   "dependencies": {
     "async": "^2.0.1",
@@ -25,8 +25,7 @@
     "yargs": "^4.8.1"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
-    "glob": "^7.0.3"
+    "coffee-script": "^1.10.0"
   },
   "repository": "fuzzy-ai/cmdln"
 }
