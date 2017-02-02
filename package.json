@@ -10,7 +10,9 @@
   "scripts": {
     "prepublish": "npm run-script build",
     "build": "coffee -c ./fuzzy.ai-cmdln.coffee && coffee -c test/",
-    "clean": "rm ./fuzzy.ai-cmdln.js; rm test/*.js"
+    "clean": "rm ./fuzzy.ai-cmdln.js; rm test/*.js",
+    "pretest": "npm run-script build",
+    "test": "perjury test/*-test.js"
   },
   "dependencies": {
     "async": "^2.0.1",
@@ -25,7 +27,8 @@
     "yargs": "^4.8.1"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0"
+    "coffee-script": "^1.10.0",
+    "perjury": "^0.4.2"
   },
   "repository": "fuzzy-ai/cmdln"
 }
