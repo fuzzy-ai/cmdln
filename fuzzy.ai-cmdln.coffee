@@ -37,6 +37,7 @@ argv = yargs
   .command('update <agent> <agentfile>', 'Update the agent from the cson file')
   .command('delete <agent>', 'Delete the agent')
   .command('batch <agent> <csvfile>', 'Evaluate all inputs from csv file')
+  .command('list', 'List all agents in account')
   .demand('k')
   .alias('k', 'key')
   .describe('k', 'API key')
@@ -322,6 +323,22 @@ handler =
         .pipe(stringifier)
         .pipe(output)
 
+    ], callback
+  list: (client, argv, callback) ->
+    debug("listing agents")
+    agents = null
+    async.waterfall [
+      (callback) ->
+        debug "Getting all agents"
+        client.getAgents callback
+      (results, callback) ->
+        agents = results
+        debug agents
+        toOutputStream argv.o, callback
+      (str, callback) ->
+        str.write "id,name\n"
+        for agent in agents
+          str.write "#{agent.id},#{agent.name}\n"
     ], callback
 
 main = (argv, callback) ->
