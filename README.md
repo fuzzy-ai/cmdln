@@ -102,6 +102,16 @@ id,input1,input2,output1
 204283a0-5820-11e6-968b-c8f73398600c,3.5,80.7,17.0
 ```
 
+## fuzzy.ai list
+
+List all the agents in your account. Outputs a CSV file with two columns,
+`id` and `name`, for the ID and name of the agent respectively.
+
+```csv
+id,name
+4ZUHJOVGAW6IPMVTHHSXZOF77Q,An agent name
+```
+
 # Options
 
 You can use various options to change how the program behaves.
