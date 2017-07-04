@@ -355,6 +355,12 @@ main = (argv, callback) ->
 main argv, (err) ->
   if err
     process.stderr.write err.message + "\n"
+    if err.body?
+      try
+        parsed = JSON.parse(err.body)
+        process.stderr.write parsed.message + "\n"
+      catch pe
+        a = 1
     process.exit 1
   else
     process.exit 0
