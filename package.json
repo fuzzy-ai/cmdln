@@ -16,15 +16,15 @@
   },
   "dependencies": {
     "async": "^2.0.1",
-    "cson": "3.0.x",
+    "cson": "^4.1.0",
     "csv-parse": "^1.1.7",
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
-    "fuzzy.ai": "^0.12.1",
+    "fuzzy.ai": "^1.0.2",
     "lodash": "^4.11.1",
     "node-uuid": "^1.4.7",
     "stream-transform": "^0.1.1",
-    "yargs": "^4.8.1"
+    "yargs": "^8.0.2"
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",
