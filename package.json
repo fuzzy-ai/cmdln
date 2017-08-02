@@ -7,6 +7,7 @@
   "files": [
     "*.js"
   ],
+  "license": "Apache-2.0",
   "scripts": {
     "prepublish": "npm run-script build",
     "build": "coffee -c ./fuzzy.ai-cmdln.coffee && coffee -c test/",
