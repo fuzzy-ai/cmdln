@@ -1,6 +1,6 @@
 {
   "name": "fuzzy.ai-cmdln",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "bin": {
     "fuzzy.ai": "./fuzzy.ai-cmdln.js"
   },
