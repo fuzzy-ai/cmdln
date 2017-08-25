@@ -20,6 +20,8 @@ assert = vows.assert
 debug = require('debug')('fuzzy.ai:list-test')
 _ = require 'lodash'
 
+parse = require 'csv-parse/lib/sync'
+
 runScript = require './run-script'
 
 vows
@@ -52,17 +54,10 @@ vows
         'it works': (err, output, created) ->
           assert.ifError err
           assert.isString output
-          [headerLine] = output.split("\n", 1)
-          debug headerLine
-          headers = headerLine.split(",")
-          debug headers
-          assert.equal headers.length, 2
-          assert.equal headers[0], "id"
-          assert.equal headers[1], "name"
-          lines = output.split("\n").slice(1, -1)
-          rows = lines.map (line) -> line.split ',', 2
-          for row in rows
-            debug row
-            assert.lengthOf row, 2
-          assert.isArray _.find rows, (row) -> row[0] == created.id
+          records = parse(output, {columns: true})
+          assert.isArray _.find records, (record) -> record.id == created.id
+          for record in records
+            debug record
+            assert.isString row.id
+            assert.isString row.name
   .export module
