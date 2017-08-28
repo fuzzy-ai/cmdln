@@ -20,49 +20,105 @@ _ = require 'lodash'
 vows = require 'perjury'
 assert = vows.assert
 debug = require('debug')('fuzzy.ai:delete-agent-test')
+async = require 'async'
 
 runScript = require './run-script'
+
+createAgent = (callback) ->
+  agentFile = path.join(__dirname, "data", "twoinputs.cson")
+  runScript "create #{agentFile}", (err, output) ->
+    if err?
+      callback err
+    else
+      try
+        data = JSON.parse output
+      catch parseError
+        return callback parseError
+      return callback null, data
 
 vows
   .describe 'delete agent test'
   .addBatch
-    'and we create a new agent':
+    'When we delete an agent with the -y flag':
       topic: ->
-        agentFile = path.join(__dirname, "data", "twoinputs.cson")
-        runScript "create #{agentFile}", (err, output) =>
-          if err?
-            @callback err
-          else
-            try
-              data = JSON.parse output
-            catch parseError
-              return @callback parseError
-            return @callback null, data
-        undefined
-      'it works': (err, data) ->
-        assert.ifError err
-        assert.isObject data
-      'and we delete the agent':
-        topic: (created) ->
-          runScript "delete #{created.id}", (err, output) =>
-            if err?
-              @callback err
-            else
-              return @callback null
-          undefined
-        'it works': (err) ->
-          assert.ifError err
-        'and we read back the agent':
-          topic: (created) ->
-            runScript "read #{created.id}", (err, output) =>
+        id = null
+        async.waterfall [
+          (callback) ->
+            createAgent callback
+          (created, callback) ->
+            id = created.id
+            runScript "delete -y #{id}", callback
+          (results, callback) ->
+            runScript "read #{id}", (err, output) =>
               if !err?
-                @callback new Error("Unexpected success")
+                callback new Error("Unexpected success")
               else if err.message.match /No such agent/
-                @callback null
+                callback null
               else
-                @callback err
-            undefined
-          'it works': (err) ->
-            assert.ifError err
+                callback err
+        ], @callback
+        undefined
+      'it works': (err) ->
+        assert.ifError err
+  .addBatch
+    'When we delete an agent with the --yes flag':
+      topic: ->
+        id = null
+        async.waterfall [
+          (callback) ->
+            createAgent callback
+          (created, callback) ->
+            id = created.id
+            runScript "delete --yes #{id}", callback
+          (results, callback) ->
+            runScript "read #{id}", (err, output) =>
+              if !err?
+                callback new Error("Unexpected success")
+              else if err.message.match /No such agent/
+                callback null
+              else
+                callback err
+        ], @callback
+        undefined
+      'it works': (err) ->
+        assert.ifError err
+  .addBatch
+    'When we delete an agent with the "y" input':
+      topic: ->
+        id = null
+        async.waterfall [
+          (callback) ->
+            createAgent callback
+          (created, callback) ->
+            id = created.id
+            runScript "delete #{id}", "y\n", callback
+          (results, callback) ->
+            runScript "read #{id}", (err, output) =>
+              if !err?
+                callback new Error("Unexpected success")
+              else if err.message.match /No such agent/
+                callback null
+              else
+                callback err
+        ], @callback
+        undefined
+      'it works': (err) ->
+        assert.ifError err
+  .addBatch
+    'When we delete an agent with the "n" input':
+      topic: ->
+        id = null
+        async.waterfall [
+          (callback) ->
+            createAgent callback
+          (created, callback) ->
+            id = created.id
+            runScript "delete #{id}", "n\n", callback
+          (results, callback) ->
+            runScript "read #{id}", callback
+        ], @callback
+        undefined
+      'it is still there': (err) ->
+        assert.ifError err
 
   .export module
