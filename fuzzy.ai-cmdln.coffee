@@ -18,6 +18,7 @@
 
 path = require 'path'
 fs = require 'fs'
+readline = require 'readline'
 
 FuzzyAIClient = require 'fuzzy.ai'
 yargs = require 'yargs'
@@ -54,6 +55,9 @@ argv = yargs
   .describe('b', "Batch size")
   .number('b')
   .default('b', 128)
+  .boolean('y')
+  .alias('y', 'yes')
+  .describe('y', 'Answer "yes" to all questions')
   .env('FUZZY_AI')
   .alias('c', 'config')
   .describe('c', 'Config file')
@@ -213,12 +217,26 @@ handler =
         ], callback
     ], callback
   delete: (client, argv, callback) ->
-    async.waterfall [
-      (callback) ->
-        toID client, argv.agent, callback
-      (id, callback) ->
-        client.deleteAgent id, callback
-    ], callback
+    doDelete = (callback) ->
+      async.waterfall [
+        (callback) ->
+          toID client, argv.agent, callback
+        (id, callback) ->
+          client.deleteAgent id, callback
+      ], callback
+
+    if argv.y
+      doDelete callback
+    else
+      rl = readline.createInterface
+        input: process.stdin
+        output: process.stdout
+      rl.question "Really delete agent #{argv.agent}? ", (answer) ->
+        if answer == "y"
+          doDelete callback
+        else
+          callback null
+
   batch: (client, argv, callback) ->
     id = null
     inputNames = null
