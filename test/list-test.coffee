@@ -46,7 +46,7 @@ vows
       'teardown': (created) ->
           callback = @callback
           debug("Deleting #{created.id}")
-          runScript "delete #{created.id}", (err, output) =>
+          runScript "delete -y #{created.id}", (err, output) =>
             if err?
               debug("Got an error deleting agent #{created.id}")
               callback err
