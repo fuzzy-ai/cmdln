@@ -11,7 +11,7 @@
   "scripts": {
     "prepublish": "npm run-script build",
     "build": "coffee -c ./fuzzy.ai-cmdln.coffee && mv ./fuzzy.ai-cmdln.js ./fuzzy.ai-cmdln.js.bak && cat header.txt fuzzy.ai-cmdln.js.bak > fuzzy.ai-cmdln.js && chmod +x fuzzy.ai-cmdln.js && rm ./fuzzy.ai-cmdln.js.bak && coffee -c test/",
-    "clean": "rm ./fuzzy.ai-cmdln.js; rm test/*.js",
+    "clean": "rm -Rf ./fuzzy.ai-cmdln.js test/*.js *~",
     "pretest": "npm run-script build",
     "test": "perjury test/*-test.js"
   },
