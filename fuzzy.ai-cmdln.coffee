@@ -335,10 +335,19 @@ handler =
         agents = results
         debug agents
         toOutputStream argv.o, callback
-      (str, callback) ->
-        str.write "id,name\n"
+      (output, callback) ->
+        stringifier = stringify
+          delimiter: ','
+          header: true
+          columns: ["id", "name"]
+        debug("Created stringifier")
+        stringifier.pipe(output)
+        debug("Walking through agents")
         for agent in agents
-          str.write "#{agent.id},#{agent.name}\n"
+          debug(JSON.stringify(agent))
+          stringifier.write([agent.id, agent.name])
+        debug("Done")
+        stringifier.end()
     ], callback
 
 main = (argv, callback) ->

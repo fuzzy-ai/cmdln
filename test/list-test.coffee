@@ -43,6 +43,17 @@ vows
       'it works': (err, data) ->
         assert.ifError err
         assert.isObject data
+      'teardown': (created) ->
+          callback = @callback
+          debug("Deleting #{created.id}")
+          runScript "delete #{created.id}", (err, output) =>
+            if err?
+              debug("Got an error deleting agent #{created.id}")
+              callback err
+            else
+              debug("Deleted agent #{created.id}")
+              callback null
+          undefined
       'and we list all agents':
         topic: (created) ->
           runScript "list", (err, output) =>
@@ -55,9 +66,9 @@ vows
           assert.ifError err
           assert.isString output
           records = parse(output, {columns: true})
-          assert.isArray _.find records, (record) -> record.id == created.id
+          assert.isObject _.find records, (record) -> record.id == created.id
           for record in records
             debug record
-            assert.isString row.id
-            assert.isString row.name
+            assert.isString record.id
+            assert.isString record.name
   .export module
