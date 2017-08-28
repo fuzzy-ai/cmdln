@@ -21,7 +21,11 @@ path = require 'path'
 
 debug = require('debug')('fuzzy.ai:run-script')
 
-module.exports = runScript = (commandLine, callback) ->
+module.exports = runScript = (commandLine, input, callback) ->
+
+  if !callback?
+    callback = input
+    input = ""
 
   base = path.join(__dirname, "..", "fuzzy.ai-cmdln.js")
   args = commandLine.split /\s+/
@@ -29,6 +33,10 @@ module.exports = runScript = (commandLine, callback) ->
   debug {base: base, args: args}
 
   child = child_process.fork base, args, {silent: true}
+
+  if input.length > 0
+    child.stdin.write input
+    child.stdin.end()
 
   errOutput = ""
   output = ""
